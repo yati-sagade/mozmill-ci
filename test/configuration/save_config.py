@@ -1,3 +1,4 @@
+import os
 from selenium import webdriver
 
 
@@ -31,7 +32,7 @@ def main():
         "tr[id*='job_'] > td:nth-child(3) > a")
     jobs = [{'name': link.text, 'href': link.get_attribute('href')} for
             link in job_links]
-    assert len(jobs) > 0, 'No jobs configured in Jenkins!'
+    assert len(jobs) == _jenkins_job_count(), 'No jobs configured in Jenkins!'
 
     for i, job in enumerate(jobs):
         driver.get(job['href'] + 'configure')
@@ -41,6 +42,14 @@ def main():
         driver.find_element_by_css_selector('#main-panel h1')
 
     driver.quit()
+
+
+def _jenkins_job_count():
+    """Return the number of jobs listed in the directory ../../jenkins-master.
+    Each job is a directory.
+
+    """
+    return len(os.walk('../../jenkins-master/jobs')[1])
 
 
 if __name__ == "__main__":

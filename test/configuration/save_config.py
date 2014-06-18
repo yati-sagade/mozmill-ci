@@ -1,4 +1,5 @@
 import os
+from os.path import dirname, abspath, join
 from selenium import webdriver
 
 
@@ -49,7 +50,9 @@ def _jenkins_job_count():
     Each job is a directory.
 
     """
-    return len(os.walk('../../jenkins-master/jobs')[1])
+    jenkins_master_dir =  join(dirname(dirname(dirname(abspath(__file__)))),
+                               join('jenkins-master', 'jobs'))
+    return len(os.walk(jenkins_master_dir).next()[1])
 
 
 if __name__ == "__main__":

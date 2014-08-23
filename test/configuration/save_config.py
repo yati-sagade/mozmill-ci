@@ -3,6 +3,10 @@ from os.path import dirname, abspath, join
 from selenium import webdriver
 
 
+# This environment variable should contain the path to the Jenkins directory.
+ENV_JENKINS_HOME = 'JENKINS_HOME'
+
+
 def main():
     base_url = 'http://localhost:8080/'
 
@@ -33,7 +37,8 @@ def main():
         "tr[id*='job_'] > td:nth-child(3) > a")
     jobs = [{'name': link.text, 'href': link.get_attribute('href')} for
             link in job_links]
-    assert len(jobs) == _jenkins_job_count(), 'No jobs configured in Jenkins!'
+    assert len(jobs) == _jenkins_job_count(),\
+            'Incorrect number of jobs for Jenkins.'
 
     for i, job in enumerate(jobs):
         driver.get(job['href'] + 'configure')
@@ -46,13 +51,19 @@ def main():
 
 
 def _jenkins_job_count():
-    """Return the number of jobs listed in the directory ../../jenkins-master.
-    Each job is a directory.
+    """Return the number of jobs listed in the directory contained in the
+    environment variable JENKINS_HOME. Each directory in $JENKINS_HOME
+    corresponds to a job.
 
     """
-    jenkins_master_dir =  join(dirname(dirname(dirname(abspath(__file__)))),
-                               join('jenkins-master', 'jobs'))
-    return len(os.walk(jenkins_master_dir).next()[1])
+    try:
+        jenkins_home = os.environ[ENV_JENKINS_HOME] 
+    except KeyError:
+        raise Exception('The environment variable {} must be set to the '
+                        'location of the Jenkins root directory.'
+                        .format(ENV_JENKINS_HOME))
+    jenkins_jobs_dir = os.path.join(jenkins_home, 'jobs')
+    return len(os.walk(jenkins_jobs_dir).next()[1])
 
 
 if __name__ == "__main__":

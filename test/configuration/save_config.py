@@ -56,12 +56,7 @@ def _jenkins_job_count():
     corresponds to a job.
 
     """
-    try:
-        jenkins_home = os.environ[ENV_JENKINS_HOME] 
-    except KeyError:
-        raise Exception('The environment variable {} must be set to the '
-                        'location of the Jenkins root directory.'
-                        .format(ENV_JENKINS_HOME))
+    jenkins_home = os.environ[ENV_JENKINS_HOME] 
     jenkins_jobs_dir = os.path.join(jenkins_home, 'jobs')
     return len(os.walk(jenkins_jobs_dir).next()[1])
 

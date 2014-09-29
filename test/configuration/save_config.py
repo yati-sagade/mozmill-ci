@@ -1,10 +1,9 @@
 import os
-from os.path import dirname, abspath, join
 from selenium import webdriver
 
 
 # This environment variable should contain the path to the Jenkins directory.
-ENV_JENKINS_HOME = 'JENKINS_HOME'
+ENV_JENKINS_HOME = os.environ['JENKINS_HOME']
 
 
 def main():
@@ -51,13 +50,8 @@ def main():
 
 
 def _jenkins_job_count():
-    """Return the number of jobs listed in the directory contained in the
-    environment variable JENKINS_HOME. Each directory in $JENKINS_HOME
-    corresponds to a job.
-
-    """
-    jenkins_home = os.environ[ENV_JENKINS_HOME] 
-    jenkins_jobs_dir = os.path.join(jenkins_home, 'jobs')
+    """Return the number of jobs as listed under Jenkins."""
+    jenkins_jobs_dir = os.path.join(ENV_JENKINS_HOME, 'jobs')
     return len(os.walk(jenkins_jobs_dir).next()[1])
 
 
